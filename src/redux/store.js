@@ -1,8 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 import productReducer from './reducer';
-import { serializer } from '../../metro.config';
-
-
 
 const options  = {
   reducer: {

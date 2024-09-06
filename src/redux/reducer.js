@@ -1,11 +1,12 @@
-import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, REMOVE_TO_CART, REMOVE_TO_WISHLIST } from "./action";
+import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, PROFILE, REMOVE_TO_CART, REMOVE_TO_WISHLIST } from "./action";
 
 
 const initialState = {
     product: [],
     category: [],
     wishList: [],
-    items: []
+    items: [],
+    
 
 };
 
@@ -74,7 +75,7 @@ function productReducer(state = initialState, action) {
         case CLEAR_CART:
             return {
                 ...state,
-                items: [],
+                items:[]
             };
         default:
             return state;

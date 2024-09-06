@@ -1,11 +1,36 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
+import { addWishList, removeWishList } from '../redux/action';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CategoryDetail = ({ route }) => {
+  const dispatch = useDispatch();
   const { name, url } = route.params;
   const navigation = useNavigation();
   const [typCat, setTypCat] = useState([]);
+
+  const addToWishList = product => dispatch(addWishList(product));
+  const removeToWishList = product => dispatch(removeWishList(product));
+  const handleAddToWishList = product => {
+    addToWishList(product);
+    //console.log('add', product.id)
+  };
+  const handleRemoveToWishList = product => {
+    removeToWishList(product);
+    //console.log('remove', product)
+  };
+
+  const wishList = useSelector(state => state.productReducer)
+
+
+  const exists = product => {
+    //console.log(product);
+    if (wishList.wishList.filter(item => item.id === product.id).length > 0) {
+      return true;
+    }
+    return false;
+  };
 
   const getCatData = async () => {
     const type = url;
@@ -20,9 +45,9 @@ const CategoryDetail = ({ route }) => {
     getCatData()
   }, [])
 
-//  console.log(slug)
+  //  console.log(slug)
   return (
-    <View>
+    <View style={styles.container}>
       <Text
         style={styles.headingText}>
         {name}
@@ -37,13 +62,29 @@ const CategoryDetail = ({ route }) => {
               onPress={() => navigation.navigate('ProductDetail', item)}
               style={styles.ProductCart}>
               <Image
-                style={{ width: 100, height: 100 }}
+                style={styles.productImage}
                 source={{ uri: IMAGE_URL }}
               />
               <View style={styles.PrdouctText}>
-                <Text style={styles.textTitle}>
-                  {item.title}
-                </Text>
+                <View style={styles.titleWishlist}>
+                  <Text style={styles.textTitle}>
+                    {item.title}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      exists(item) ? handleRemoveToWishList(item) : handleAddToWishList(item)
+                    }
+                    activeOpacity={0.7}
+                    style={styles.addCartHeart}>
+
+                    <Image
+                      style={exists(item) ? styles.addToImageRed : styles.addToImage}
+                      source={
+                        exists(item) ? (require('../image/heart-filled.png')) : (require('../image/heart.png'))
+                      }
+                    />
+                  </TouchableOpacity>
+                </View>
                 <Text
                   style={styles.textPrice}>
                   {`$ ${item.price} `} <Text style={{ textDecorationLine: 'line-through' }}>
@@ -60,14 +101,19 @@ const CategoryDetail = ({ route }) => {
         }
       />
     </View>
-
-
   )
 }
 
 export default CategoryDetail
 
 const styles = StyleSheet.create({
+  container: {
+
+    backgroundColor: '#FFFFFF',
+    marginBottom: 80,
+
+
+  },
   catText: {
     fontSize: 20,
     padding: 10,
@@ -81,36 +127,44 @@ const styles = StyleSheet.create({
     marginBottom: 5
 
   },
+  productImage: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center'
+  },
   ProductCart: {
     flexDirection: 'row',
-
     width: "95%",
-    alignItems: 'center',
-    alignSelf: 'center',
     padding: 5,
     margin: 10,
     borderRadius: 10,
     backgroundColor: '#EEEFF4',
-    elevation: 3
+    elevation: 2,
+    height: 150,
+
   },
   PrdouctText: {
+    flex: 1,
     flexDirection: 'column',
     marginStart: 5
   },
   textTitle: {
-    fontSize: 18,
+    flex: 1,
+    fontSize: 16,
     fontWeight: '800',
-    color: 'black'
+    color: 'black',
+
+
 
   },
   textPrice: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'black',
 
   },
   availabilityStatus: {
-    fontSize: 16,
-    color: 'red',
+    fontSize: 14,
+    color: 'green',
     marginTop: 5,
     fontWeight: '400'
   },
@@ -125,7 +179,25 @@ const styles = StyleSheet.create({
   headingText: {
     fontSize: 22,
     margin: 10,
-    fontWeight: '800'
+    fontWeight: '600',
+    color: 'black',
 
+  },
+  addToImage: {
+    width: 18,
+    height: 18,
+    marginTop: 12,
+  },
+  addToImageRed: {
+    width: 18,
+    height: 18,
+    tintColor: 'red',
+    marginTop: 12,
+  },
+  titleWishlist: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12
   }
 })

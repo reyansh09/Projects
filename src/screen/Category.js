@@ -26,7 +26,7 @@ const Category = () => {
   }, []);
   
   return (
-    <View>
+    <View style={{backgroundColor:'#FFFFFF'}}>
     <Text style={styles.headingText}>
       Choose your Intrest
     </Text>
@@ -71,7 +71,8 @@ catText:{
   headingText:{
 fontSize:22,
 margin:10,
-fontWeight:'800'
+fontWeight:'800',
+color:'#000'
 
   }
 })
