@@ -2,7 +2,7 @@ import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import React, { useEffect, useState } from 'react'
 
 import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
-import { addWishList, getCategory, getProduct } from '../redux/action';
+import { addWishList, getCategory, getProduct, setSize } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -15,11 +15,6 @@ const ProductDetail = ({ navigation, route }) => {
 
     //Category Add
     const [cat, setCat] = useState([]);
-   
-
-  
-    
-    
 
     //Product-Add
 
@@ -27,192 +22,217 @@ const ProductDetail = ({ navigation, route }) => {
     const [data, setData] = useState([])
     const addToWishList = product => dispatch(addWishList(product));
     useEffect(() => {
-        
+
         if (productReducer) {
-          setData(productReducer.product.products)
-        
+            setData(productReducer.product.products)
+
         }
-        if(categorys){
+        if (categorys) {
             setCat(categorys.category)
-            
+
         }
-      }, productReducer,categorys)
+    }, productReducer, categorys)
     const productReducer = useSelector(state => state.productReducer);
     const categorys = useSelector(state => state.productReducer)
 
     const fetchProduct = () => dispatch(getProduct());
     const fetachCategory = () => dispatch(getCategory());
-  useEffect(() => {
-    fetchProduct();
-    fetachCategory();
+    useEffect(() => {
+        fetchProduct();
+        fetachCategory();
     }, []);
 
-    
 
 
-   
-    
+    //Select Size  
+    const selectedSize = useSelector(state => state.productReducer.selectedSize);
+    const handleSizeChange = (size) => {
+        dispatch(setSize(size));
+    };
+
+
+
 
     const available = 'In Stock'
-    const { title, images, description, brand, category, price, rating, stock, warrantyInformation, shippingInformation, reviews, availabilityStatus, id ,url} = route.params;
+    const { title, images, description, brand, category, price, rating, stock, warrantyInformation, shippingInformation, reviews, availabilityStatus, id, url } = route.params;
 
 
-    
+
 
     return (
         <View>
             <ScrollView>
-            <View style={{flex:1}}>
-                <View>
-                    <View style={{ backgroundColor: '#FFFFFF' }}>
-                        <Image
-                            source={{ uri: images[0] }}
-                            style={styles.productImage}
-                            resizeMode='center'
-                        />
-                        <Text style={styles.titleText}>
-                            {title}
-                        </Text>
+                <View style={{ flex: 1 }}>
+                    <View>
+                        <View style={{ backgroundColor: '#FFFFFF' }}>
+                            <Image
+                                source={{ uri: images[0] }}
+                                style={styles.productImage}
+                                resizeMode='center'
+                            />
+                            <Text style={styles.titleText}>
+                                {title}
+                            </Text>
 
-                        <Text style={styles.descriptionText}>
-                            {description}
-                        </Text>
-                        <Text style={styles.priceText}>
-                            $ {price}
-                        </Text>
-                        <View style={styles.rowContainer}>
-                            <Image
-                                style={styles.reviewImage}
-                                source={require('../image/star-filled.png')}
-                            />
-                            <Image
-                                style={styles.reviewImage1}
-                                source={require('../image/star-filled.png')}
-                            />
-                            <Image
-                                style={styles.reviewImage1}
-                                source={require('../image/star-filled.png')}
-                            />
-                            <Image
-                                style={styles.reviewImage1}
-                                source={require('../image/star.png')}
-                            />
-                            <Image
-                                style={styles.reviewImage1}
-                                source={require('../image/star.png')}
-                            />
-                            <Text style={styles.textReview}>(2 Ratings)</Text>
+                            <Text style={styles.descriptionText}>
+                                {description}
+                            </Text>
+                            <Text style={styles.priceText}>
+                                $ {price}
+                            </Text>
+                            <View style={styles.rowContainer}>
+                                <Image
+                                    style={styles.reviewImage}
+                                    source={require('../image/star-filled.png')}
+                                />
+                                <Image
+                                    style={styles.reviewImage1}
+                                    source={require('../image/star-filled.png')}
+                                />
+                                <Image
+                                    style={styles.reviewImage1}
+                                    source={require('../image/star-filled.png')}
+                                />
+                                <Image
+                                    style={styles.reviewImage1}
+                                    source={require('../image/star.png')}
+                                />
+                                <Image
+                                    style={styles.reviewImage1}
+                                    source={require('../image/star.png')}
+                                />
+                                <Text style={styles.textReview}>(2 Ratings)</Text>
+                            </View>
+
+                            <Text style={styles.textTaxes}>Inclusive of all texes</Text>
                         </View>
+                        <View style={styles.otherProductCobntainer}>
 
-                        <Text style={styles.textTaxes}>Inclusive of all texes</Text>
-                    </View>
-                    <View style={styles.otherProductCobntainer}>
+                            <Text style={styles.commonText}>Select Size:</Text>
 
-                        <Text style={styles.commonText}>Select Size:</Text>
-                        <View style={styles.rowContainer}>
-                            <View style={styles.sizeBox}>
-                                <Text style={styles.textBox}>
-                                    Small
-                                </Text>
-                            </View>
-                            <View style={styles.greyBox}>
-                                <Text style={styles.textBoxBlack}>
-                                    Medium
-                                </Text>
-                            </View>
-                            <View style={styles.greyBox}>
-                                <Text style={styles.textBoxBlack}>
-                                    Large
-                                </Text>
-                            </View>
-                        </View>
+                            <View style={styles.rowContainer}>
 
-                        {/* <Text style={styles.commonText}>Brand:</Text>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.sizeBox,
+                                        selectedSize === 'small' ? styles.selected : styles.unselected,
+                                    ]}
+                                    onPress={() => handleSizeChange('small')}
+                                >
+                                    <Text style={selectedSize === 'small' ? styles.textBox:styles.textBoxBlack}>
+                                        Small
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                 style={[
+                                        styles.sizeBox,
+                                        selectedSize === 'medium' ? styles.selected : styles.unselected,
+                                    ]}
+                                    onPress={() => handleSizeChange('medium')}
+                                >
+                                    <Text style={selectedSize === 'medium' ? styles.textBox:styles.textBoxBlack}>
+                                        Medium
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                 style={[
+                                        styles.sizeBox,
+                                        selectedSize === 'large' ? styles.selected : styles.unselected,
+                                    ]}
+                                    onPress={() => handleSizeChange('large')}
+                                >
+                                    <Text style={selectedSize === 'large' ? styles.textBox:styles.textBoxBlack}>
+                                        Large
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {/* <Text style={styles.commonText}>Brand:</Text>
                     <Text style={styles.brandText}>
                         {brand}
                     </Text> */}
 
-                        <Text style={styles.commonText}>Select Color:</Text>
+                            <Text style={styles.commonText}>Select Color:</Text>
 
-                        <View style={styles.rowContainer}>
-                            <View style={styles.selectColorViewBlack}>
+                            <View style={styles.rowContainer}>
+                                <View style={styles.selectColorViewBlack}>
+
+                                </View>
+                                <View style={styles.selectColorViewWhite}>
+
+                                </View>
+                                <View style={styles.selectColorViewRed}>
+
+                                </View>
+                            </View>
+
+                            <Text style={styles.commonText}>Quantity:</Text>
+
+                            <View style={styles.quantityContainer}>
+                                <TouchableOpacity
+
+                                // onPress={() => handleDecreaseQuantity(item.id)}
+                                >
+                                    <Image
+                                        style={styles.minusBtn}
+                                        source={require('../image/minus.png')}
+                                    />
+
+                                </TouchableOpacity>
+                                <Text style={styles.quantityText}>1</Text>
+                                <TouchableOpacity
+                                //   onPress={() => handleIncreaseQuantity(item.id)}
+                                >
+                                    <Image
+                                        style={styles.moreBtn}
+                                        source={require('../image/more.png')}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                            <View>
 
                             </View>
-                            <View style={styles.selectColorViewWhite}>
-
-                            </View>
-                            <View style={styles.selectColorViewRed}>
-
-                            </View>
-                        </View>
-
-                        <Text style={styles.commonText}>Quantity:</Text>
-
-                        <View style={styles.quantityContainer}>
-                            <TouchableOpacity
-
-                            // onPress={() => handleDecreaseQuantity(item.id)}
-                            >
-                                <Image
-                                    style={styles.minusBtn}
-                                    source={require('../image/minus.png')}
-                                />
-
-                            </TouchableOpacity>
-                            <Text style={styles.quantityText}>1</Text>
-                            <TouchableOpacity
-                            //   onPress={() => handleIncreaseQuantity(item.id)}
-                            >
-                                <Image
-                                    style={styles.moreBtn}
-                                    source={require('../image/more.png')}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                        <View>
-
                         </View>
                     </View>
-                </View>
-                <View style={styles.similarProductContainer} >
-                    <FlatList
-                        horizontal={true}
-                        data={data}
-                        renderItem={({ item }) => {
-                            const IMAGE_URL = item.images[0]
-                            return (
-                                <View style={styles.similarProductArea}>
-                                    <View style={styles.imgeBorder}>
-                                        <Image
-                                            resizeMode='cover'
-                                            source={{ uri: IMAGE_URL }}
-                                            style={styles.similarProductImg}
-                                        />
+                    <View style={styles.similarProductContainer} >
+                        <FlatList
+                            horizontal={true}
+                            data={data}
+                            renderItem={({ item }) => {
+                                const IMAGE_URL = item.images[0]
+                                return (
+                                    <View style={styles.similarProductArea}>
+                                        <View style={styles.imgeBorder}>
+                                            <Image
+                                                resizeMode='cover'
+                                                source={{ uri: IMAGE_URL }}
+                                                style={styles.similarProductImg}
+                                            />
+                                        </View>
+
+                                        <Text style={styles.similarProductText}>{item.title}</Text>
+                                        <Text style={styles.similarProductText}>$ {item.price}
+
+                                        </Text>
                                     </View>
-
-                                    <Text style={styles.similarProductText}>{item.title}</Text>
-                                    <Text style={styles.similarProductText}>$ {item.price}
-
-                                    </Text>
-                                </View>
-                            )
-                        }}
-                    />
-                </View>
+                                )
+                            }}
+                        />
+                    </View>
                 </View>
 
                 <View style={styles.BottomBtn}>
-                        <TouchableOpacity style={styles.rowWishlist} >
-                            <Image
-                                style={styles.wishlistImage}
-                                source={require('../image/wishlist.png')}
-                            />
-                            <Text style={styles.wishlistText}>  WishList</Text>
-                        </TouchableOpacity>
+                    <TouchableOpacity style={styles.rowWishlist} >
+                        <Image
+                            style={styles.wishlistImage}
+                            source={require('../image/wishlist.png')}
+                        />
+                        <Text style={styles.wishlistText}>  WishList</Text>
+                    </TouchableOpacity>
 
-                        <Text style={available == availabilityStatus ? (styles.availableTextGreen) : (styles.availableTextRed)}>
-                            {availabilityStatus}</Text>
-                    </View>
+                    <Text style={available == availabilityStatus ? (styles.availableTextGreen) : (styles.availableTextRed)}>
+                        {availabilityStatus}</Text>
+                </View>
             </ScrollView>
 
         </View>
@@ -221,8 +241,8 @@ const ProductDetail = ({ navigation, route }) => {
 export default ProductDetail
 
 const styles = StyleSheet.create({
-    rowContainer:{
-        flexDirection:'row'
+    rowContainer: {
+        flexDirection: 'row'
     },
     productImage: {
         height: 320,
@@ -231,7 +251,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 15,
         marginBottom: '20',
-        backgroundColor: '#FFFFFF'
+        backgroundColor: '#FFFFFF',
     },
     titleText: {
         fontSize: 20,
@@ -241,10 +261,10 @@ const styles = StyleSheet.create({
         margin: 10
 
     },
-    otherProductCobntainer:{
+    otherProductCobntainer: {
         backgroundColor: '#FFFFFF',
-         marginTop: 15,
-          flex: 1
+        marginTop: 15,
+        flex: 1
     },
     quantityContainer: {
         flexDirection: 'row',
@@ -254,8 +274,8 @@ const styles = StyleSheet.create({
         width: 140,
         height: 50,
         justifyContent: 'center',
-        marginBottom:20,
-        marginStart:20
+        marginBottom: 20,
+        marginStart: 20
     },
     minusBtn: {
         height: 25,
@@ -398,11 +418,17 @@ const styles = StyleSheet.create({
         marginStart: 20,
         marginTop: 10,
         justifyContent: 'center'
-    }
-    , textBox: {
+    },
+    selected: {
+        backgroundColor: 'orange',
+    },
+    unselected: {
+        backgroundColor: '#DEDEDE',
+    },
+    textBox: {
         color: '#FFFFFF',
         alignSelf: 'center',
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '500'
 
     },
@@ -431,7 +457,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         elevation: 4,
-        borderWidth:0.2
+        borderWidth: 0.2
 
     }
     , selectColorViewWhite: {
@@ -443,7 +469,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginBottom: 10,
         elevation: 4,
-        borderWidth:0.2
+        borderWidth: 0.2
 
     }
     , selectColorViewBlack: {

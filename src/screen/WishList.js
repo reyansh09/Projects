@@ -1,7 +1,7 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { removeWishList } from '../redux/action';
+import { addCartList, removeWishList } from '../redux/action';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -9,6 +9,14 @@ import { useNavigation } from '@react-navigation/native';
 const WishList = () => {
   const navigation = useNavigation();
   const [wishListData, setwishListData] = useState([]);
+
+  //Add to Cart
+  const handleAddToCart = product => {
+    dispatch(addCartList(product));
+    navigation.navigate('Cart'); // Navigate to Cart tab
+  };
+
+
   useEffect(() => {
     if (wishList) {
       setwishListData(wishList.wishList)
@@ -71,18 +79,23 @@ const WishList = () => {
                       {item.availabilityStatus}
                     </Text>
 
-                    {/* <View style={{flexDirection:'row',alignContent:'center'}}>
+                    <View style={styles.addToCartContainer}>
+                      <TouchableOpacity 
+                      style={styles.addToCartContainer}
+                      onPress={() => handleAddToCart(item)}
+                      >
+                        <Image
+                          style={styles.addToCartImage}
+                          source={require('../image/cart.png')}
+                        />
+                        <Text style={styles.addToCartText}>Add to Cart</Text>
+                      </TouchableOpacity>
 
-                    <Image
-                    style={styles.addToCartImage}
-                      source={require('../image/cart.png')}
-                    />
-                    <Text style={styles.addToCartText}>Add to Cart</Text>
-                    <Text style={styles.removeText}
-                     onPress={() => handleRemoveWishList(item)}
-                    >Remove</Text>
+                      <Text style={styles.removeText}
+                        onPress={() => handleRemoveWishList(item)}
+                      >Remove</Text>
 
-                    </View> */}
+                    </View>
                   </View>
 
                 </View>
@@ -102,13 +115,13 @@ const WishList = () => {
 export default WishList
 
 const styles = StyleSheet.create({
-  container:{
-    backgroundColor:'#FFFFFF',
-     flex:1
+  container: {
+    backgroundColor: '#FFFFFF',
+    flex: 1
   },
-  rowCiantainer:{
-    flexDirection:'row',
-    width:'100%'
+  rowCiantainer: {
+    flexDirection: 'row',
+    width: '100%'
   },
   ProductCart: {
     flexDirection: 'row',
@@ -121,17 +134,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     // elevation: 3,
     height: 160,
-    borderBottomWidth:5,
-    borderBottomColor:'#D3D3D3'
+    borderBottomWidth: 5,
+    borderBottomColor: '#D3D3D3'
   },
   PrdouctText: {
     flex: 1,
     flexDirection: 'column',
     marginStart: 5
   },
-  productImage:{
-    height:100,
-    width:100
+  productImage: {
+    height: 100,
+    width: 100
   },
   textTitle: {
     flex: 1,
@@ -181,26 +194,29 @@ const styles = StyleSheet.create({
     alignContent: 'center'
 
   },
-  addToCartImage:{
-    height:20,
-    width:20,
-    marginTop:8
+  addToCartImage: {
+    height: 20,
+    width: 20,
+    marginTop: 8
   },
-  addToCartText:{
-    marginTop:10,
-    marginStart:5,
-    fontSize:15,
-    color:'#000',
-    borderRightWidth:2,
-   paddingEnd:15,
-   fontWeight:'600'
+  addToCartText: {
+    marginTop: 10,
+    marginStart: 5,
+    fontSize: 15,
+    color: '#000',
+    borderRightWidth: 2,
+    paddingEnd: 15,
+    fontWeight: '600'
   },
-  removeText:{
-    marginTop:10,
-    marginStart:20,
-    fontSize:15,
-    color:'#000',
-    fontWeight:'600'
-    
+  removeText: {
+    marginTop: 10,
+    marginStart: 20,
+    fontSize: 15,
+    color: '#000',
+    fontWeight: '600'
+
+  },addToCartContainer:{
+    flexDirection: 'row',
+     alignContent: 'center'
   }
 })

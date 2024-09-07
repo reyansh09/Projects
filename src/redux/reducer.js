@@ -1,4 +1,4 @@
-import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, PROFILE, REMOVE_TO_CART, REMOVE_TO_WISHLIST } from "./action";
+import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, PROFILE, REMOVE_TO_CART, REMOVE_TO_WISHLIST, SET_SIZE } from "./action";
 
 
 const initialState = {
@@ -6,7 +6,7 @@ const initialState = {
     category: [],
     wishList: [],
     items: [],
-    
+    selectedSize:'small'
 
 };
 
@@ -49,6 +49,11 @@ function productReducer(state = initialState, action) {
             } else {
                 return { ...state, items: [...state.items, { ...action.payload, quantity: 1 }] };
             }
+            case REMOVE_TO_CART:
+                return{
+                    ...state,
+                    items: state.items.filter(item=>item.id !== action.payload.id)
+                };
 
         case INCREASE_QUANTITY:
             return {
@@ -75,7 +80,12 @@ function productReducer(state = initialState, action) {
         case CLEAR_CART:
             return {
                 ...state,
-                items:[]
+                items: []
+            };
+        case SET_SIZE:
+            return {
+                ...state,
+                selectedSize: action.payload,
             };
         default:
             return state;

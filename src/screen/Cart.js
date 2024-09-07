@@ -1,8 +1,8 @@
 // screens/Cart.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { addWishList, clearCart, decreaseQuantity, increaseQuantity, removeWishList } from '../redux/action';
+import { addWishList, clearCart, decreaseQuantity, increaseQuantity, removeCart, removeWishList } from '../redux/action';
 
 
 const Cart = () => {
@@ -35,8 +35,8 @@ const Cart = () => {
 
 
 
+ 
   const wishList = useSelector(state => state.productReducer)
-
 
   const exists = product => {
     //console.log(product);
@@ -46,6 +46,13 @@ const Cart = () => {
     return false;
   };
 
+  
+  
+  //console.log( "AddToCart",cart)
+  const removeFromCartist = product => dispatch(removeCart(product));
+  const handleRemoveCartList = product => {
+    removeFromCartist(product);
+  };
 
 
 
@@ -109,7 +116,7 @@ const Cart = () => {
                     <Text style={styles.addToCartText}>Move to WishList</Text>
                   </TouchableOpacity>
                   <Text style={styles.removeText}
-                    onPress={() => handleDecreaseQuantity(item.id)}
+                    onPress={() => handleRemoveCartList(item)}
                   >Remove</Text>
                 </View>
               </View>

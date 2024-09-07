@@ -1,7 +1,7 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { addWishList, removeWishList } from '../redux/action';
+import { addCartList, addWishList, removeWishList } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CategoryDetail = ({ route }) => {
@@ -30,6 +30,12 @@ const CategoryDetail = ({ route }) => {
       return true;
     }
     return false;
+  };
+
+  //add to cart
+  const handleAddToCart = product => {
+    dispatch(addCartList(product));
+    navigation.navigate('Cart'); // Navigate to Cart tab
   };
 
   const getCatData = async () => {
@@ -94,6 +100,20 @@ const CategoryDetail = ({ route }) => {
                 <Text style={styles.availabilityStatus}>
                   {item.availabilityStatus}
                 </Text>
+
+                <View >
+
+                      <TouchableOpacity
+                        style={styles.addtoContainer}
+                        onPress={() => handleAddToCart(item)}
+                      >
+                        <Image
+                          style={styles.cartImage}
+                          source={require('../image/cart.png')}
+                        />
+                        <Text style={styles.addToCartText}> Add to Cart</Text>
+                      </TouchableOpacity>
+                    </View>
               </View>
             </TouchableOpacity>
           )
@@ -199,5 +219,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 12
-  }
+  },
+  addtoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10
+  },
+  addToCartText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginStart: 5,
+    color: 'black'
+
+  },
+  cartImage:{
+    height:20,
+    width:20
+  },
 })

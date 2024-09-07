@@ -7,6 +7,8 @@ export const ADD_TO_WISHLIST = "ADD_TO_WISHLIST"
 export const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 export const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
 export const CLEAR_CART = 'CLEAR_CART';
+export const SET_SIZE = 'SET_SIZE';
+export const REMOVE_TO_CART="REMOVE_TO_CART";
 
 
 
@@ -16,6 +18,11 @@ const CAT_URL = "https://dummyjson.com/products/categories";
 
 
 
+
+export const setSize = (size) => ({
+  type: SET_SIZE,
+  payload: size,
+});
 
 export const addWishList = product => dispatch => {
   dispatch({
@@ -50,6 +57,11 @@ export const decreaseQuantity = (id) => ({
 export const clearCart = () => ({
   type: CLEAR_CART,
 });
+
+export const removeCart=()=>({
+  type: REMOVE_TO_CART,
+  payload: product,
+})
 
 //Category
 export const getCategory = () => {

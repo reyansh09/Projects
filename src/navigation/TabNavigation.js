@@ -24,7 +24,7 @@ function HomeStackScreen() {
   return (
 
     <HomeStack.Navigator
-   ref={navigationRef}
+   
     >
       <HomeStack.Screen name="MultiKart" component={Home}
       screenOptions={{
