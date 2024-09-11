@@ -11,6 +11,7 @@ import ProductDetail from '../screen/ProductDetail';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CategoryDetail from '../screen/CategoryDetail';
 import { navigationRef } from '../../App';
+import Search from '../screen/SearchPage';
 
 
 
@@ -35,7 +36,7 @@ function HomeStackScreen() {
           headerRight: () => (
             <View style={{ flexDirection: 'row', padding: 10 }}>
               <TouchableOpacity
-               //onPress={() => navigationRef.current?.navigate('Hotel')}
+               onPress={() => navigationRef.current?.navigate('Search')}
               >
                 <Image
                   style={{ width: 25, height: 25, marginRight: 15 }}
@@ -51,7 +52,7 @@ function HomeStackScreen() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-               onPress={() => useNavigation.navigate('Category')}
+               onPress={() => navigationRef.current?.navigate('WishList')}
               >
                 <Image
                   style={{ width: 25, height: 25, marginRight: 15 }}
@@ -59,7 +60,7 @@ function HomeStackScreen() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-              // onPress={() => navigationRef.current?.navigate('QuerySection')}
+              onPress={() => navigationRef.current?.navigate('Cart')}
               >
                 <Image
                   style={{ width: 25, height: 25 }}
@@ -76,14 +77,24 @@ function HomeStackScreen() {
        }}
       />
       <HomeStack.Screen name="CategoryDetail" component={CategoryDetail} />
+
+      <HomeStack.Screen name="Search" component={Search} />
+
+      <HomeStack.Screen name="WishList" component={WishList} />
+
+      <HomeStack.Screen name="Cart" component={Cart} />
+
+
     </HomeStack.Navigator>
+
+    
    
   );
 }
 
 function CategoryStackScreen() {
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator >
       <HomeStack.Screen name="Category" component={Category} />
       <HomeStack.Screen name="ProductDetail" component={ProductDetail} />
       <HomeStack.Screen name="CategoryDetail" component={CategoryDetail} />
@@ -101,7 +112,7 @@ function WishListStackScreen() {
             <View style={{padding: 10}}>
               
               <TouchableOpacity
-              // onPress={() => navigationRef.current?.navigate('QuerySection')}
+              onPress={() => navigationRef.current?.navigate('Cart')}
               >
                 <Image
                   style={{ width: 25, height: 25 }}
@@ -113,9 +124,14 @@ function WishListStackScreen() {
         }}
       />
       <HomeStack.Screen name="ProductDetail" component={ProductDetail} />
+      <HomeStack.Screen name="Cart" component={Cart} />
+      <HomeStack.Screen name="MultiKart" component={Home} />
     </HomeStack.Navigator>
   );
 }
+
+
+
 const TabNavigation = () => {
 
   return (
@@ -165,6 +181,7 @@ const TabNavigation = () => {
           options={{
             headerShown: false,
             title: 'Category',
+            
 
             tabBarIcon: ({ focused }) => <Image
               style={
@@ -182,7 +199,7 @@ const TabNavigation = () => {
             <View style={{padding: 10}}>
               
               <TouchableOpacity
-               //onPress={() => navigationRef.current?.navigate('WishListStackScreen')}
+               onPress={() => navigationRef.current?.navigate('WishList')}
               >
                 <Image
                   style={{ width: 25, height: 25 }}

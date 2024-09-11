@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { addCartList, removeWishList } from '../redux/action';
@@ -29,9 +29,12 @@ const WishList = () => {
   const handleRemoveWishList = product => {
     removeFromWishList(product);
   };
+
+  
+
   return (
     <View style={styles.container}>
-      <View >
+     { wishListData.length > 0? ( <View >
 
         <FlatList
           data={wishListData}
@@ -106,7 +109,25 @@ const WishList = () => {
           }
           }
         />
-      </View>
+      </View>):
+      (<View style={styles.emptyContainer}>
+      <Image
+        source={require('../image/empty.jpg')}
+        style={styles.emptyImage}
+      />
+        <Text style={styles.emptyHeading}> Whoops!! WishList is Empty</Text>
+        <Text style={styles.emptyDes}>Looks like you haven't added anything to your wishlist yet. You will find a lot of interesting Products on our "Shop" page</Text>
+        <TouchableOpacity
+        onPress={()=>{
+         navigation.replace('MultiKart')
+        }}
+        style={styles.buttonContainer}>
+          <Text style={styles.emptyText}>
+            START SHOPPING
+          </Text>
+        </TouchableOpacity>
+      </View>)
+       }
 
     </View>
   )
@@ -115,6 +136,44 @@ const WishList = () => {
 export default WishList
 
 const styles = StyleSheet.create({
+  emptyContainer:{
+       flex:1,
+       justifyContent:'center',
+       alignItems:'center'
+  },
+  buttonContainer:{
+       width:'90%',
+       height:50,
+       backgroundColor:'#FF4C3B',
+       borderRadius:4,
+       marginTop:25,
+       justifyContent:'center'
+  },
+  emptyHeading:{
+    fontSize:22,
+    color:'#000000',
+    fontWeight:'bold'
+
+  },
+  emptyText:{
+    fontSize:20,
+    alignSelf:'center',
+    color:'#FFFFFF',
+    fontWeight:'400'
+  },
+  emptyImage:{
+   height:200,
+   width:200,
+   
+
+  },
+  emptyDes:{
+    fontSize:19,
+    textAlign:'center',
+    marginTop:20
+    
+
+  },
   container: {
     backgroundColor: '#FFFFFF',
     flex: 1

@@ -1,4 +1,4 @@
-import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, PROFILE, REMOVE_TO_CART, REMOVE_TO_WISHLIST, SET_SIZE } from "./action";
+import { ADD_TO_CART, ADD_TO_WISHLIST, CLEAR_CART, DECREASE_QUANTITY, GET_CATEGORY, GET_PRODUCT, INCREASE_QUANTITY, INCREMENT_QUANTITY, PROFILE, REMOVE_TO_CART, REMOVE_TO_WISHLIST, SEARCH_PRODUCT, SET_SIZE } from "./action";
 
 
 const initialState = {
@@ -6,7 +6,8 @@ const initialState = {
     category: [],
     wishList: [],
     items: [],
-    selectedSize:'small'
+    selectedSize: 'small',
+    search:[]
 
 };
 
@@ -19,6 +20,12 @@ function productReducer(state = initialState, action) {
             return {
                 ...state,
                 product: action.payload,
+            };
+        case SEARCH_PRODUCT:
+            //console.log("reducer",action.payload)
+            return {
+                ...state,
+                seacrh: action.payload,
             };
         case GET_CATEGORY:
             //console.log("reducer",action.payload)
@@ -49,11 +56,11 @@ function productReducer(state = initialState, action) {
             } else {
                 return { ...state, items: [...state.items, { ...action.payload, quantity: 1 }] };
             }
-            case REMOVE_TO_CART:
-                return{
-                    ...state,
-                    items: state.items.filter(item=>item.id !== action.payload.id)
-                };
+        case REMOVE_TO_CART:
+            return {
+                ...state,
+                items: state.items.filter(item => item.id !== action.payload.id)
+            };
 
         case INCREASE_QUANTITY:
             return {

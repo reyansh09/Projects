@@ -1,145 +1,112 @@
 // screens/Cart.js
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addWishList, clearCart, decreaseQuantity, increaseQuantity, removeCart, removeWishList } from '../redux/action';
 
-
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.productReducer);
-  //console.log(cartItems,"hello")
   const addToWishList = product => dispatch(addWishList(product));
   const removeToWishList = product => dispatch(removeWishList(product));
-  const handleAddToWishList = product => {
-    addToWishList(product);
-    //console.log('add', product.id)
-  };
-  const handleRemoveToWishList = product => {
-    removeToWishList(product);
-    //console.log('remove', product)
-  };
+  const handleAddToWishList = product => addToWishList(product);
+  const handleRemoveToWishList = product => removeToWishList(product);
 
+  const handleIncreaseQuantity = id => dispatch(increaseQuantity(id));
+  const handleDecreaseQuantity = id => dispatch(decreaseQuantity(id));
+  const handleClearCart = () => dispatch(clearCart());
 
-  const handleIncreaseQuantity = id => {
-    dispatch(increaseQuantity(id));
-  };
+  const wishList = useSelector(state => state.productReducer);
 
-  const handleDecreaseQuantity = id => {
-    dispatch(decreaseQuantity(id));
-  };
+  const exists = product => wishList.wishList.some(item => item.id === product.id);
 
-  const handleClearCart = id => {
-    dispatch(clearCart(id));
-  };
-
-
-
- 
-  const wishList = useSelector(state => state.productReducer)
-
-  const exists = product => {
-    //console.log(product);
-    if (wishList.wishList.filter(item => item.id === product.id).length > 0) {
-      return true;
-    }
-    return false;
-  };
-
-  
-  
-  //console.log( "AddToCart",cart)
-  const removeFromCartist = product => dispatch(removeCart(product));
-  const handleRemoveCartList = product => {
-    removeFromCartist(product);
-  };
-
-
+  const removeFromCartList = product => dispatch(removeCart(product));
+  const handleRemoveCartList = product => removeFromCartList(product);
 
   const totalPrice = cartItems.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={cartItems.items}
-        renderItem={({ item }) => {
-          const available = "In Stock"
-          return (
+      {cartItems.items.length > 0 ? (
+        <>
+          <FlatList
+            data={cartItems.items}
+            renderItem={({ item }) => {
+              const available = "In Stock";
+              return (
+                <View style={styles.cartItem}>
+                  <Image
+                    resizeMode='center'
+                    style={styles.imageSize}
+                    source={{ uri: item.images[0] }}
+                  />
+                  <View style={{ flexDirection: 'column' }}>
+                    <Text style={styles.itemTitle}>{item.title}</Text>
+                    <Text style={styles.itemPrice}>{`$ ${item.price}`}</Text>
+                    <Text
+                      style={available == item.availabilityStatus ? styles.availabilityStatusGreen : styles.availabilityStatusRed}
+                    >
+                      {item.availabilityStatus}
+                    </Text>
 
-            <View style={styles.cartItem}>
-              <Image
-                resizeMode='center'
-                style={styles.imageSize}
-                source={{ uri: item.images[0] }}
-              />
-              <View style={{ flexDirection: 'column' }}>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text style={styles.itemPrice}>{`$ ${item.price}`}</Text>
-                <Text style={available == item.availabilityStatus ? styles.availabilityStatusGreen : styles.availabilityStatusRed}>
-                  {item.availabilityStatus}
-                </Text>
+                    <View style={styles.quantityContainer}>
+                      <TouchableOpacity onPress={() => handleDecreaseQuantity(item.id)}>
+                        <Image style={styles.minusBtn} source={require('../image/minus.png')} />
+                      </TouchableOpacity>
+                      <Text style={styles.quantityText}>{item.quantity}</Text>
+                      <TouchableOpacity onPress={() => handleIncreaseQuantity(item.id)}>
+                        <Image style={styles.moreBtn} source={require('../image/more.png')} />
+                      </TouchableOpacity>
+                    </View>
 
-                <View style={styles.quantityContainer}>
-                  <TouchableOpacity
-
-                    onPress={() => handleDecreaseQuantity(item.id)}>
-                    <Image
-                      style={styles.minusBtn}
-                      source={require('../image/minus.png')}
-                    />
-
-                  </TouchableOpacity>
-                  <Text style={styles.quantityText}>{item.quantity}</Text>
-                  <TouchableOpacity onPress={() => handleIncreaseQuantity(item.id)}>
-                    <Image
-                      style={styles.moreBtn}
-                      source={require('../image/more.png')}
-                    />
-                  </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignContent: 'center' }}>
+                      <TouchableOpacity
+                        style={{ flexDirection: 'row' }}
+                        onPress={() =>
+                          exists(item) ? handleRemoveToWishList(item) : handleAddToWishList(item)
+                        }
+                      >
+                        <Image
+                          style={exists(item) ? styles.addToImageRed : styles.addToImage}
+                          source={
+                            exists(item) ? require('../image/heart-filled.png') : require('../image/heart.png')
+                          }
+                        />
+                        <Text style={styles.addToCartText}>Move to WishList</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.removeText} onPress={() => handleRemoveCartList(item)}>
+                        Remove
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={{ flexDirection: 'row', alignContent: 'center' }}>
-                  <TouchableOpacity
-                    style={{ flexDirection: 'row' }}
-                    onPress={() =>
-                      exists(item) ? handleRemoveToWishList(item) : handleAddToWishList(item)
-                    }
-                  >
+              );
+            }}
+          />
 
-                    <Image
-                      style={exists(item) ? styles.addToImageRed : styles.addToImage}
-                      source={
-                        exists(item) ? (require('../image/heart-filled.png')) : (require('../image/heart.png'))
-                      }
-                    />
-                    <Text style={styles.addToCartText}>Move to WishList</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.removeText}
-                    onPress={() => handleRemoveCartList(item)}
-                  >Remove</Text>
-                </View>
-              </View>
+          <View style={styles.totalContainer}>
+            <View style={styles.totalPriceContainer}>
+              <Text style={styles.totalTextPrice}>{`$${totalPrice.toFixed(2)}`}</Text>
+              <Text style={styles.totalText}>Total Amount:</Text>
             </View>
 
-
-          )
-        }}
-      // keyExtractor={item => item.id.toString()}
-      />
-      <View style={styles.totalContainer}>
-        <View style={styles.totalPriceContainer}>
-          <Text style={styles.totalTextPrice}>{`$${totalPrice.toFixed(2)}`}</Text>
-          <Text style={styles.totalText}>Total Amount:</Text>
-
+            <TouchableOpacity style={styles.clearCartButton} onPress={handleClearCart}>
+              <Text style={styles.clearCartText}>Clear Cart</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Image source={require('../image/empty.jpg')} style={styles.emptyImage} />
+          <Text style={styles.emptyHeading}>Your Cart is Empty</Text>
+          <Text style={styles.emptyDes}>
+            Looks like you haven't added anything to your cart yet. Browse products on the "Shop" page.
+          </Text>
+          <TouchableOpacity onPress={() => navigation.replace('MultiKart')} style={styles.buttonContainer}>
+            <Text style={styles.emptyText}>START SHOPPING</Text>
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.clearCartButton} onPress={handleClearCart}>
-          <Text style={styles.clearCartText}>Clear Cart</Text>
-        </TouchableOpacity>
-      </View>
-
-
+      )}
     </View>
   );
 };
@@ -285,7 +252,42 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center'
 
-  }
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  emptyImage: {
+    height: 200,
+    width: 200,
+  },
+  emptyHeading: {
+    fontSize: 22,
+    color: '#000000',
+    fontWeight: 'bold',
+    marginTop: 20,
+  },
+  emptyDes: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  buttonContainer: {
+    width: '90%',
+    height: 50,
+    backgroundColor: '#FF4C3B',
+    borderRadius: 4,
+    marginTop: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
 });
 
 export default Cart;
+

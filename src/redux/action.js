@@ -9,12 +9,15 @@ export const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
 export const CLEAR_CART = 'CLEAR_CART';
 export const SET_SIZE = 'SET_SIZE';
 export const REMOVE_TO_CART="REMOVE_TO_CART";
+export const SEARCH_PRODUCT="SEARCH_PRODUCT";
+
 
 
 
 
 const BASE_URL = 'https://dummyjson.com/products';
 const CAT_URL = "https://dummyjson.com/products/categories";
+const SEARCH_URL="https://dummyjson.com/products/search?q=phone";
 
 
 
@@ -76,6 +79,32 @@ export const getCategory = () => {
         // console.log("action",res.data)
         dispatch({
           type: GET_CATEGORY,
+          payload: res.data,
+
+        });
+      } else {
+        console.log('Unable to fetch');
+      }
+    };
+  } catch (error) {
+  }
+};
+
+
+//Search Product
+
+export const searchProductaItem = () => {
+
+  try {
+
+    return async dispatch => {
+
+      const res = await axios.get(`${SEARCH_URL}`);
+      // console.log("action", res)
+      if (res.data) {
+        // console.log("action",res.data)
+        dispatch({
+          type: SEARCH_PRODUCT,
           payload: res.data,
 
         });
