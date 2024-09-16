@@ -1,8 +1,8 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { addCartList, addWishList, removeWishList } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, addToWishList, removeFromWishList } from '../redux/prdouctSlice';
 
 const CategoryDetail = ({ route }) => {
   const dispatch = useDispatch();
@@ -10,10 +10,10 @@ const CategoryDetail = ({ route }) => {
   const navigation = useNavigation();
   const [typCat, setTypCat] = useState([]);
 
-  const addToWishList = product => dispatch(addWishList(product));
-  const removeToWishList = product => dispatch(removeWishList(product));
+  const addToWishLists = product => dispatch(addToWishList(product));
+  const removeToWishList = product => dispatch(removeFromWishList(product));
   const handleAddToWishList = product => {
-    addToWishList(product);
+    addToWishLists(product);
     //console.log('add', product.id)
   };
   const handleRemoveToWishList = product => {
@@ -21,12 +21,12 @@ const CategoryDetail = ({ route }) => {
     //console.log('remove', product)
   };
 
-  const wishList = useSelector(state => state.productReducer)
+  const wishList = useSelector(state => state.products.wishList)
 
 
   const exists = product => {
     //console.log(product);
-    if (wishList.wishList.filter(item => item.id === product.id).length > 0) {
+    if (wishList.filter(item => item.id === product.id).length > 0) {
       return true;
     }
     return false;
@@ -34,7 +34,7 @@ const CategoryDetail = ({ route }) => {
 
   //add to cart
   const handleAddToCart = product => {
-    dispatch(addCartList(product));
+    dispatch(addToCart(product));
     navigation.navigate('Cart'); // Navigate to Cart tab
   };
 
@@ -43,13 +43,36 @@ const CategoryDetail = ({ route }) => {
     let result = await fetch(type);
     result = await result.json();
     setTypCat(result.products);
-
-    //console.log(result.products)
   };
 
   useEffect(() => {
     getCatData()
   }, [])
+  const {  
+    loading,
+    error,
+  } = useSelector(state => state.products);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ff6347" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+        <TouchableOpacity onPress={() => {
+          getCatData();
+        }}>
+          <Text style={styles.retryText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   //  console.log(slug)
   return (

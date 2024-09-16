@@ -1,27 +1,22 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { getCategory } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { fetchCategories } from '../redux/prdouctSlice';
 
 
 const Category = () => {
   const dispatch = useDispatch();
   const navigation=useNavigation();
-  const [categoryList, setCategoryList] = useState([]);
 
+
+ 
+
+  const category = useSelector(state => state.products.categories)
+
+  const fetachCategory = () => dispatch(fetchCategories());
   useEffect(() => {
-    if (category) {
-
-      setCategoryList(category.category)
-    }
-  },category)
-
-  const category = useSelector(state => state.productReducer)
-
-  const fetachCategory = () => dispatch(getCategory());
-  useEffect(() => {
-    fetachCategory();
+    fetchCategories();
 
   }, []);
   
@@ -33,7 +28,7 @@ const Category = () => {
       <View >
         <FlatList
           
-          data={categoryList}
+          data={category}
 
           renderItem={({ item }) => <TouchableOpacity
 style={styles.catBox}

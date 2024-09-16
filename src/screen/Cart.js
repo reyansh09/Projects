@@ -2,35 +2,37 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { addWishList, clearCart, decreaseQuantity, increaseQuantity, removeCart, removeWishList } from '../redux/action';
+import { addToWishList, clearCart, decreaseQuantity, increaseQuantity, removeFromCart, removeFromWishList } from '../redux/prdouctSlice';
+
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector(state => state.productReducer);
-  const addToWishList = product => dispatch(addWishList(product));
-  const removeToWishList = product => dispatch(removeWishList(product));
-  const handleAddToWishList = product => addToWishList(product);
+  const cartItems = useSelector(state => state.products.items);
+  
+  const addToWishLists = product => dispatch(addToWishList(product));
+  const removeToWishList = product => dispatch(removeFromWishList(product));
+  const handleAddToWishList = product => addToWishLists(product);
   const handleRemoveToWishList = product => removeToWishList(product);
 
   const handleIncreaseQuantity = id => dispatch(increaseQuantity(id));
   const handleDecreaseQuantity = id => dispatch(decreaseQuantity(id));
   const handleClearCart = () => dispatch(clearCart());
 
-  const wishList = useSelector(state => state.productReducer);
+  const wishList = useSelector(state => state.products.wishList);
 
-  const exists = product => wishList.wishList.some(item => item.id === product.id);
+  const exists = product => wishList.some(item => item.id === product.id);
 
-  const removeFromCartList = product => dispatch(removeCart(product));
+  const removeFromCartList = product => dispatch(removeFromCart(product));
   const handleRemoveCartList = product => removeFromCartList(product);
 
-  const totalPrice = cartItems.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <View style={styles.container}>
-      {cartItems.items.length > 0 ? (
+      {cartItems.length > 0 ? (
         <>
           <FlatList
-            data={cartItems.items}
+            data={cartItems}
             renderItem={({ item }) => {
               const available = "In Stock";
               return (

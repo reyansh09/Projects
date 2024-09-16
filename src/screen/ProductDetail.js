@@ -1,9 +1,9 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect} from 'react'
 
 import { getFocusedRouteNameFromRoute, useNavigation } from '@react-navigation/native';
-import { addWishList, getCategory, getProduct, setSize } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts, setSize } from '../redux/prdouctSlice';
 
 
 
@@ -12,53 +12,25 @@ const ProductDetail = ({ navigation, route }) => {
     React.useLayoutEffect(() => {
         navigation.setOptions({ headerTitle: title });
     }, [navigation, routeName]);
-
-    //Category Add
-    const [cat, setCat] = useState([]);
-
-    //Product-Add
-
     const dispatch = useDispatch();
-    const [data, setData] = useState([])
-    const addToWishList = product => dispatch(addWishList(product));
-    useEffect(() => {
-
-        if (productReducer) {
-            setData(productReducer.product.products)
-
-        }
-        if (categorys) {
-            setCat(categorys.category)
-
-        }
-    }, productReducer, categorys)
-    const productReducer = useSelector(state => state.productReducer);
-    const categorys = useSelector(state => state.productReducer)
-
-    const fetchProduct = () => dispatch(getProduct());
-    const fetachCategory = () => dispatch(getCategory());
-    useEffect(() => {
-        fetchProduct();
-        fetachCategory();
-    }, []);
-
-
-
+        const { products } = useSelector(state => state.products);
+        // Fetch data on mount
+        useEffect(() => {
+            console.log("Fetching products...");
+           dispatch(fetchProducts());
+          
+         }, [dispatch]);
+ 
     //Select Size  
-    const selectedSize = useSelector(state => state.productReducer.selectedSize);
+    const selectedSize = useSelector(state => state.products.selectedSize);
     const handleSizeChange = (size) => {
+    //    console.log(selectedSize,'hellooo')
         dispatch(setSize(size));
+        // console.log(size)
     };
-
-
-
 
     const available = 'In Stock'
     const { title, images, description, brand, category, price, rating, stock, warrantyInformation, shippingInformation, reviews, availabilityStatus, id, url } = route.params;
-
-
-
-
     return (
         <View>
             <ScrollView>
@@ -119,29 +91,29 @@ const ProductDetail = ({ navigation, route }) => {
                                     ]}
                                     onPress={() => handleSizeChange('small')}
                                 >
-                                    <Text style={selectedSize === 'small' ? styles.textBox:styles.textBoxBlack}>
+                                    <Text style={selectedSize === 'small' ? styles.textBox : styles.textBoxBlack}>
                                         Small
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity 
-                                 style={[
+                                <TouchableOpacity
+                                    style={[
                                         styles.sizeBox,
                                         selectedSize === 'medium' ? styles.selected : styles.unselected,
                                     ]}
                                     onPress={() => handleSizeChange('medium')}
                                 >
-                                    <Text style={selectedSize === 'medium' ? styles.textBox:styles.textBoxBlack}>
+                                    <Text style={selectedSize === 'medium' ? styles.textBox : styles.textBoxBlack}>
                                         Medium
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity 
-                                 style={[
+                                <TouchableOpacity
+                                    style={[
                                         styles.sizeBox,
                                         selectedSize === 'large' ? styles.selected : styles.unselected,
                                     ]}
                                     onPress={() => handleSizeChange('large')}
                                 >
-                                    <Text style={selectedSize === 'large' ? styles.textBox:styles.textBoxBlack}>
+                                    <Text style={selectedSize === 'large' ? styles.textBox : styles.textBoxBlack}>
                                         Large
                                     </Text>
                                 </TouchableOpacity>
@@ -197,7 +169,7 @@ const ProductDetail = ({ navigation, route }) => {
                     <View style={styles.similarProductContainer} >
                         <FlatList
                             horizontal={true}
-                            data={data}
+                            data={products}
                             renderItem={({ item }) => {
                                 const IMAGE_URL = item.images[0]
                                 return (
@@ -252,7 +224,13 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginBottom: '20',
         backgroundColor: '#FFFFFF',
-    },
+    }, 
+    errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
     titleText: {
         fontSize: 20,
         padding: 10,

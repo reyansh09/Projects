@@ -1,303 +1,344 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-
+import React, { useEffect } from 'react';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { addCartList, addWishList, getCategory, getProduct, removeWishList } from '../redux/action';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  addToCart,
+  fetchProducts,
+  fetchCategories,
+  addToWishList,
+  removeFromWishList,
+} from '../redux/prdouctSlice';
 
+// Adjust the path as necessary
 
+const defaultCategoryImage = "https://littleboxindia.com/cdn/shop/files/f1d4802c9c39391020211dc1fb328304_720x.jpg?v=1719493846";
 
-const image = [
-  {
-    url: "https://littleboxindia.com/cdn/shop/files/f1d4802c9c39391020211dc1fb328304_720x.jpg?v=1719493846",
-  },
-]
-export default Home = () => {
+const Home = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [data, setData] = useState([])
-  const [cat, setCat] = useState([]);
 
-
-  const handleAddToCart = product => {
-    dispatch(addCartList(product));
-    navigation.navigate('Cart'); // Navigate to Cart tab
-  };
-  const addToWishList = product => dispatch(addWishList(product));
-  const removeToWishList = product => dispatch(removeWishList(product));
-  const handleAddToWishList = product => {
-
-    addToWishList(product);
-    //console.log('add', product.id)
-  };
-  const handleRemoveToWishList = product => {
-    removeToWishList(product);
-    //console.log('remove', product)
+  // Selectors
+  const {
+    products,
+    categories,
+    wishList,
+    loading,
+    error,
+  } = useSelector(state => state.products);
+  // console.log(categories, "product")
+  // Handlers
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product));
+    navigation.navigate('Cart'); // Ensure 'Cart' is a valid route
   };
 
+  const handleAddToWishList = (product) => {
+    //console.log('hello')
+    dispatch(addToWishList(product));
+  };
+
+  const handleRemoveFromWishList = (product) => {
+    // console.log('hello')
+    dispatch(removeFromWishList(product));
+  };
+
+  const isInWishList = (product) => {
+    // console.log('hello')
+    return wishList.some(item => item.id === product.id);
+  };
+
+  // Fetch data on mount
   useEffect(() => {
-    if (productReducer) {
-      setData(productReducer.product.products)
-    }
-    if (category) {
-      setCat(category.category)
-    }
-  }, productReducer, category)
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const productReducer = useSelector(state => state.productReducer);
-  const category = useSelector(state => state.productReducer)
-  const wishList = useSelector(state => state.productReducer)
-  const exists = product => {
-    //console.log(product);
-    if (wishList.wishList.filter(item => item.id === product.id).length > 0) {
-      return true;
-    }
-    return false;
-  };
-  const fetchProduct = () => dispatch(getProduct());
-  const fetachCategory = () => dispatch(getCategory());
-  useEffect(() => {
-    fetchProduct();
-    fetachCategory();
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ff6347" />
+      </View>
+    );
+  }
 
-  }, []);
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+        <TouchableOpacity onPress={() => {
+          dispatch(fetchProducts());
+          dispatch(fetchCategories());
+        }}>
+          <Text style={styles.retryText}>Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-
-    <View style={{ marginBottom: 60 }}>
-
+    <View style={styles.container}>
+      {/* Categories Section */}
       <View style={styles.mainCatContainer}>
         <FlatList
-          horizontal={true}
-          data={cat}
-
-          renderItem={({ item }) => <TouchableOpacity
-            onPress={() => navigation.navigate('CategoryDetail', item)}
-          >
-            <View style={styles.catContainer}>
+          horizontal
+          data={categories}
+          keyExtractor={(item, index) => `${item}-${index}`}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.catContainer}
+              onPress={() => navigation.navigate('CategoryDetail', item)}
+            >
               <Image
                 style={styles.catImage}
-                source={{ uri: image[0].url }}
+                source={{ uri: defaultCategoryImage }}
               />
               <Text style={styles.catText}>{item.name}</Text>
-            </View>
-
-          </TouchableOpacity>}
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
         />
       </View>
 
-
-
+      {/* Products Section */}
       <View style={styles.mainProductContainer}>
-        <View style={styles.rowContainer}>
-          <Text style={styles.textHeding}>
-            Deal of the Day
-          </Text>
-          <Text style={styles.textSeeAll}>
-            See All
-          </Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerText}>Deal of the Day</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AllProducts')}>
+            <Text style={styles.seeAllText}>See All</Text>
+          </TouchableOpacity>
         </View>
         <FlatList
-          data={data}
+          data={products}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => {
-            const IMAGE_URL = item.images[0]
-            const available = "In Stock"
+            const IMAGE_URL = item.images[0];
+            const available = "In Stock"; // Assuming all products are in stock; adjust as needed
+
             return (
               <TouchableOpacity
+                style={styles.productCard}
                 onPress={() => navigation.navigate('ProductDetail', item)}
-                style={styles.ProductCart}>
-
+              >
                 <Image
                   style={styles.productImage}
                   source={{ uri: IMAGE_URL }}
                 />
-                <View style={styles.PrdouctText}>
-                  <View style={styles.rowContainer}>
-                    <Text style={styles.textTitle}>
-                      {item.title}
-                    </Text>
+                <View style={styles.productInfo}>
+                  <View style={styles.titleRow}>
+                    <Text style={styles.productTitle}>{item.title}</Text>
                     <TouchableOpacity
-                      onPress={() =>
-                        exists(item) ? handleRemoveToWishList(item) : handleAddToWishList(item)
-                      }
-                      activeOpacity={0.7}
-                      style={styles.addCartHeart}>
-
+                      onPress={() => isInWishList(item) ? handleRemoveFromWishList(item) : handleAddToWishList(item)}
+                      style={styles.wishListButton}
+                    >
                       <Image
-                        style={exists(item) ? styles.addToImageRed : styles.addToImage}
+                        style={isInWishList(item) ? styles.heartFilled : styles.heartOutline}
                         source={
-                          exists(item) ? (require('../image/heart-filled.png')) : (require('../image/heart.png'))
+                          isInWishList(item)
+                            ? require('../image/heart-filled.png') // Ensure this path is correct
+                            : require('../image/heart.png') // Ensure this path is correct
                         }
                       />
                     </TouchableOpacity>
                   </View>
-                  <Text
-                    style={styles.textPrice}>
-                    {`$ ${item.price} `} <Text style={{ textDecorationLine: 'line-through' }}>
-                      {`$${parseFloat(((item.discountPercentage * 100) / item.price).toFixed(1))}`} </Text>
-                    <Text style={{ color: 'red', fontWeight: '500' }}> {` ${item.discountPercentage}%`}</Text>
-                  </Text>
-                  <View >
-                    <Text
-                      style={available == item.availabilityStatus ? (styles.availabilityStatusGreen) : (styles.availabilityStatusRed)}>
-                      {item.availabilityStatus}
+                  <Text style={styles.productPrice}>
+                    ${item.price}{' '}
+                    <Text style={styles.originalPrice}>
+                      ${parseFloat((item.price * (100 / (100 - item.discountPercentage))).toFixed(2))}
                     </Text>
-                    <View >
-
-                      <TouchableOpacity
-                        style={styles.addtoContainer}
-                        onPress={() => handleAddToCart(item)}
-                      >
-                        <Image
-                          style={styles.cartImage}
-                          source={require('../image/cart.png')}
-                        />
-                        <Text style={styles.addToCartText}> Add to Cart</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+                    <Text style={styles.discountPercentage}>
+                      {' '}
+                      {item.discountPercentage}%
+                    </Text>
+                  </Text>
+                  <Text
+                    style={available === item.availabilityStatus ? styles.statusAvailable : styles.statusUnavailable}
+                  >
+                    {item.availabilityStatus || available}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.addToCartButton}
+                    onPress={() => handleAddToCart(item)}
+                  >
+                    <Image
+                      style={styles.cartIcon}
+                      source={require('../image/cart.png')} // Ensure this path is correct
+                    />
+                    <Text style={styles.addToCartText}>Add to Cart</Text>
+                  </TouchableOpacity>
                 </View>
               </TouchableOpacity>
-            )
-          }
-          }
+            );
+          }}
+          showsVerticalScrollIndicator={false}
         />
       </View>
-
-      <View style={{ height: 60, width: '100%', position: 'absolute', }}>
-
-      </View>
     </View>
-  )
-}
+  );
+};
 
+export default Home;
+
+// Styles
 const styles = StyleSheet.create({
-  mainProductContainer: {
-    backgroundColor: '#FFFFFF',
-    marginTop: 15,
-
-  },
-  rowContainer:{
-    flexDirection:'row',
-    width:'100%'
-  },
-  mainCatContainer: {
-    backgroundColor: '#FFFFFF',
-    paddingBottom: 10,
-    paddingTop: 10,
-
-  },
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 10,
+  },
+  mainCatContainer: {
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+  },
+  catContainer: {
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  catImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 5,
   },
   catText: {
     fontSize: 14,
-    color: 'black',
-    width: 100,
-    textAlign: 'center'
+    color: '#000',
+    textAlign: 'center',
+    width: 80,
   },
-  catContainer: {
-    flexDirection: 'column',
+  mainProductContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  catImage: {
-    borderRadius: 40,
-    height: 80,
-    width: 80
+  headerText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#000',
+    marginVertical: 10,
   },
-  cartImage:{
-    height:20,
-    width:20
+  seeAllText: {
+    fontSize: 16,
+    color: '#ff6347',
+    fontWeight: '400',
+  },
+  productCard: {
+    flexDirection: 'row',
+    backgroundColor: '#EEEFF4',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+    elevation: 2,
   },
   productImage: {
     width: 100,
-    height: 100
-  },
-  ProductCart: {
-    flexDirection: 'row',
-    width: "90%",
-    alignItems: 'center',
-    alignSelf: 'center',
-    padding: 5,
-    margin: 10,
+    height: 100,
     borderRadius: 10,
-    backgroundColor: '#EEEFF4',
-    elevation: 1,
-    height: 140
   },
-  PrdouctText: {
-    flexDirection: 'column',
-    marginStart: 5,
-    flex: 1
-  },
-  addToImage: {
-    width: 25,
-    height: 25,
-    marginRight: 10,
-  },
-  addToImageRed: {
-    width: 25,
-    height: 25,
-    marginRight: 10,
-    tintColor: 'red'
-  },
-  addCartHeart: {
-    padding: 5,
-    borderRadius: 20,
-    height: 30,
-    width: 30,
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    alignContent: 'center'
-  },
-  textTitle: {
+  productInfo: {
     flex: 1,
+    marginLeft: 10,
+    justifyContent: 'space-between',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: 'black'
-
+    color: '#000',
+    flex: 1,
+    paddingRight: 10,
   },
-  textPrice: {
+  wishListButton: {
+    padding: 5,
+  },
+  heartOutline: {
+    width: 25,
+    height: 25,
+    tintColor: '#000',
+  },
+  heartFilled: {
+    width: 25,
+    height: 25,
+    tintColor: 'red',
+  },
+  productPrice: {
     fontSize: 12,
-    color: 'black',
-
+    color: '#000',
   },
-  availabilityStatusRed: {
-    fontSize: 13,
+  originalPrice: {
+    textDecorationLine: 'line-through',
+    color: '#808080',
+    fontSize: 10,
+  },
+  discountPercentage: {
     color: 'red',
-    marginTop: 5,
-    fontWeight: '400'
+    fontWeight: '500',
+    fontSize: 10,
   },
-  availabilityStatusGreen: {
+  statusAvailable: {
     fontSize: 13,
     color: 'green',
     marginTop: 5,
-    fontWeight: '400'
+    fontWeight: '400',
   },
-  textHeding: {
-    flex: 1,
-    fontSize: 18,
-    margin: 10,
-    color: 'black',
-    fontWeight: '500'
-  },
-  textSeeAll: {
-    fontSize: 16,
-    alignSelf: 'center',
-    padding: 10,
+  statusUnavailable: {
+    fontSize: 13,
     color: 'red',
-    fontWeight: '400'
+    marginTop: 5,
+    fontWeight: '400',
   },
-  addtoContainer: {
+  addToCartButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
+  },
+  cartIcon: {
+    width: 20,
+    height: 20,
   },
   addToCartText: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginStart: 5,
-    color: 'black'
-
-  }
-})
+    marginLeft: 5,
+    color: '#000',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  retryText: {
+    fontSize: 16,
+    color: '#ff6347',
+    fontWeight: '500',
+  },
+});

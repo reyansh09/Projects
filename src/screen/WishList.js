@@ -1,43 +1,40 @@
 import { Button, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { addCartList, removeWishList } from '../redux/action';
 import { useNavigation } from '@react-navigation/native';
+import { addToCart, removeFromWishList } from '../redux/prdouctSlice';
 
 
 
 const WishList = () => {
   const navigation = useNavigation();
-  const [wishListData, setwishListData] = useState([]);
+
 
   //Add to Cart
   const handleAddToCart = product => {
-    dispatch(addCartList(product));
+    dispatch(addToCart(product));
     navigation.navigate('Cart'); // Navigate to Cart tab
   };
 
 
-  useEffect(() => {
-    if (wishList) {
-      setwishListData(wishList.wishList)
-    }
-  }, wishList)
-  const wishList = useSelector(state => state.productReducer);
+  const wishList = useSelector(state => state.products.wishList);
   //console.log( "AddToCart",cart)
   const dispatch = useDispatch();
-  const removeFromWishList = product => dispatch(removeWishList(product));
-  const handleRemoveWishList = product => {
-    removeFromWishList(product);
+  const handleRemoveFromWishList = (product) => {
+    // console.log('hello')
+    dispatch(removeFromWishList(product));
   };
+
+
 
   
 
   return (
     <View style={styles.container}>
-     { wishListData.length > 0? ( <View >
+     { wishList.length > 0? ( <View >
 
         <FlatList
-          data={wishListData}
+          data={wishList}
           //keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => {
             const IMAGE_URL = item.images[0]
@@ -58,7 +55,7 @@ const WishList = () => {
                     </Text>
 
                     <TouchableOpacity
-                      onPress={() => handleRemoveWishList(item)}
+                      onPress={() => handleRemoveFromWishList(item)}
                       activeOpacity={0.7}
                       style={styles.addHeart}>
 
@@ -95,7 +92,7 @@ const WishList = () => {
                       </TouchableOpacity>
 
                       <Text style={styles.removeText}
-                        onPress={() => handleRemoveWishList(item)}
+                        onPress={() => handleRemoveFromWishList(item)}
                       >Remove</Text>
 
                     </View>

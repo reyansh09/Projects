@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import {searchProductaItem } from "../redux/action";
+
 import { useDispatch, useSelector } from "react-redux";
-import { spawn } from "child_process";
+
+import { searchProduct } from "../redux/prdouctSlice";
 
 
 const Search = () => {
@@ -35,7 +36,7 @@ const Search = () => {
 const SProduct = useSelector(state => state.productReducer);
     
 
-    const fetahSeachItem = () => dispatch(searchProductaItem());
+    const fetahSeachItem = () => dispatch(searchProduct());
     useEffect(() => {
         fetahSeachItem()
   
